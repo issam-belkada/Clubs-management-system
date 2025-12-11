@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('clubs', function (Blueprint $table) {
-            $table->id();
-            $table->string('name')->unique();
+            $table->id()->autoIncrement();
+            $table->string('name');
             $table->text('description')->nullable();
             $table->text('logo_url')->nullable();
             $table->string('contact_email')->unique();
