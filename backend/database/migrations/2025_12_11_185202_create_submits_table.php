@@ -11,16 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('event_posts', function (Blueprint $table) {
+        Schema::create('submits', function (Blueprint $table) {
             $table->id()->autoIncrement();
             $table->foreignId('event_id')->constrained('events')->onDelete('cascade');
-            $table->text('content');
-            $table->string('post_image')->nullable();
-            $table->string('post_image2')->nullable();
-            $table->string('post_image3')->nullable();
-            $table->string('post_image4')->nullable();
-            $table->string('post_video')->nullable();
-            $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->dateTime('submitted_at');
+            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
+            $table->json('form_data');
             $table->timestamps();
         });
     }
@@ -30,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('event_posts');
+        Schema::dropIfExists('submits');
     }
 };

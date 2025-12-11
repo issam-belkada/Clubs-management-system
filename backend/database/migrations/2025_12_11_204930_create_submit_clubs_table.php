@@ -11,15 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('projects', function (Blueprint $table) {
+        Schema::create('submit_clubs', function (Blueprint $table) {
             $table->id()->autoIncrement();
-            $table->string('name');
-            $table->text('description')->nullable();
-            $table->date('start_date')->nullable();
-            $table->date('end_date')->nullable();
-            $table->enum('status', ['not_started', 'in_progress', 'completed'])->default('not_started');
             $table->foreignId('club_id')->constrained('clubs')->onDelete('cascade');
-            $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->dateTime('submitted_at');
+            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
+            $table->json('form_data');
             $table->timestamps();
         });
     }
@@ -29,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('projects');
+        Schema::dropIfExists('submit_clubs');
     }
 };

@@ -4,23 +4,21 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Event extends Model
+class SubmitClub extends Model
 {
     protected $fillable = [
-        'title',
-        'description',
-        'date',
-        'time',
-        'location',
-        'event_type_id',
         'club_id',
-        'created_by',
-        'custom_form',
-        'event_image'
+        'user_id',
+        'submitted_at',
+        'status',
+        'form_data'
     ];
-
     public function club(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Club::class);
+    }
+    public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(User::class);   
     }
 }
