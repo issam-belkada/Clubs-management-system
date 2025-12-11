@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('event_id')->constrained('events')->onDelete('cascade');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->dateTime('submitted_at');
+            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->json('form_data');
             $table->timestamps();
         });
