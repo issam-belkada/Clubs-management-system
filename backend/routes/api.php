@@ -37,7 +37,7 @@ Route::prefix('clubs')->group(function () {
         // Club Resources
         Route::get('/resources', [ResourceController::class, 'index']);
         Route::post('/resources', [ResourceController::class, 'store'])->middleware('auth:sanctum');
-        
+        Route::get('/search', [ClubController::class, 'search']);
         // Club Projects
         Route::get('/projects', [ProjectController::class, 'index']);
         Route::post('/projects', [ProjectController::class, 'store'])->middleware('auth:sanctum');

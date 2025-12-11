@@ -6,6 +6,11 @@ use Illuminate\Http\Request;
 use App\Models\Club;
 class ClubsContoller extends Controller
 {
+    protected $neo4j;
+    public function __construct()
+    {
+        $this->neo4j = app('neo4j');
+    }
     public function index()
     {
         return response()->json(['data' => Club::paginate(10)], 200);
@@ -74,5 +79,106 @@ class ClubsContoller extends Controller
         $events = $club->events()->paginate(10);
         return response()->json(['data' => $events], 200);
     }
+    public function search(Request $request)
+    {
+        $query = Club::query();
+        if ($request->has('name')) {
+            $query->where('name', 'like', '%' . $request->input('name') . '%');
+        }
+        if ($request->has('location')) {
+            $query->where('location', 'like', '%' . $request->input('location') . '%');
+        }
+        $clubs = $query->paginate(10);
+        return response()->json(['data' => $clubs], 200);
+    }
+
+    public function members($id)
+    {
+        $club = Club::find($id);
+        if (!$club) {
+            return response()->json(['message' => 'Club not found'], 404);
+        }
+        $successful_submittion = SbmitClub::where('club_id',$id)->where('status','approved')->pluck('user_id')->toArray();
+        $members =  User::whereIn('id',$successful_submittion)->get();
+        return response()->json(['data' => $members], 200);
+    }
+    public function addMember(Request $request, $id)
+    {
+        $club = Club::find($id);
+        if (!$club) {
+            return response()->json(['message' => 'Club not found'], 404);
+        }
+        $validatedData = $request->validate([
+            'user_id' => 'required|integer|exists:users,id',
+        ]);
+        $existingSubmit = SubmitClub::where('club_id', $id)
+            ->where('user_id', $request->input('user_id'))
+            ->first();
+        if ($existingSubmit) {
+            return response()->json(['message' => 'User has already submitted a request to join this club'], 400);
+        }
+        $submit = SubmitClub::create([
+            'club_id' => $id,
+            'user_id' => $request->input('user_id'),
+            'submitted_at' => now(),
+            'status' => 'approved',
+            'form_data' => json_encode([]),
+        ]);
+        return response()->json(['data' => $submit], 201);
+    }
+    public function removeMember($clubId, $userId)
+    {
+        $club = Club::find($clubId);
+        if (!$club) {
+            return response()->json(['message' => 'Club not found'], 404);
+        }
+        $submit = SubmitClub::where('club_id', $clubId)
+            ->where('user_id', $userId)
+            ->first();
+        if (!$submit || $submit->status !== 'approved') {
+            return response()->json(['message' => 'User is not a member of this club'], 400);
+        }
+        $submit->delete();
+        return response()->json(['message' => 'Member removed from club'], 200);
+    }
+    public function updateMemberRole(Request $request, $clubId, $userId)
+    {
+        // This function can be implemented to update member roles within the club
+        return response()->json(['message' => 'Not implemented'], 501);
+    }
+
+    public function follow(Request $request, $clubId)
+    {
+        
+        $req  = $this->neo4j->run(
+            'MATCH (u:User {id: $userId}), (c:Club {id: $clubId})
+             MERGE (u)-[:FOLLOWS]->(c)',
+            [
+                'userId' => $request->user()->id,
+                'clubId' => (int)$clubId
+            ]
+        );
+        if($req->getRecords()==null){
+            return response()->json(['message' => 'Club or User not found'], 404);
+        }
+
+        return response()->json(['message' => 'follwed the club'], 200);
+    }
+    public function unfollow(Request $request, $clubId)
+    {
+        $req = $this->neo4j->run(
+            'MATCH (u:User {id: $userId})-[f:FOLLOWS]->(c:Club {id: $clubId})
+             DELETE f',
+            [
+                'userId' => $request->user()->id,
+                'clubId' => (int)$clubId
+            ]
+        );
+        if($req->getRecords()==null){
+            return response()->json(['message' => 'Club or User not found'], 404);
+        }
+        return response()->json(['message' => 'unfollowed'], 200);
+    }
+
 
 }

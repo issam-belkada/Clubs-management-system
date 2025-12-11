@@ -23,4 +23,5 @@ class Club extends Model
     {
         return $this->hasMany(Event::class);
     }
+    
 }
