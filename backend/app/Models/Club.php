@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Club extends Model
 {
     //
-    $fillable = [
+    protected $fillable = [
         'name',
         'description',
         'logo_url',
@@ -19,5 +19,8 @@ class Club extends Model
         'border_image',
         'created_by'
     ];
-    
+    public function events(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Event::class);
+    }
 }

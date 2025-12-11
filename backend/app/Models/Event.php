@@ -18,4 +18,9 @@ class Event extends Model
         'custom_form',
         'event_image'
     ];
+
+    public function club(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Club::class);
+    }
 }

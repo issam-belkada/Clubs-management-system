@@ -6,5 +6,18 @@ use Illuminate\Database\Eloquent\Model;
 
 class Ressource extends Model
 {
-    //
+    protected $fillable = [
+        'title',
+        'description',
+        'type',
+        'cost',
+        'date_uploaded',
+        'file_path',
+        'uploaded_by'
+    ];
+    public function uploader(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(User::class, 'uploaded_by');
+    }
+    
 }

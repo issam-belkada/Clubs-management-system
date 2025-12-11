@@ -11,4 +11,12 @@ class Attendance extends Model
         'user_id',
         'status',
     ];
+    public function event(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Event::class);
+    }
+    public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 }

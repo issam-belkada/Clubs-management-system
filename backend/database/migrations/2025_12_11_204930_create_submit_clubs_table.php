@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('submits', function (Blueprint $table) {
+        Schema::create('submit_clubs', function (Blueprint $table) {
             $table->id()->autoIncrement();
-            $table->foreignId('event_id')->constrained('events')->onDelete('cascade');
+            $table->foreignId('club_id')->constrained('clubs')->onDelete('cascade');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->dateTime('submitted_at');
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('submits');
+        Schema::dropIfExists('submit_clubs');
     }
 };
