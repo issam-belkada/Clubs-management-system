@@ -97,6 +97,14 @@ return [
             'search_path' => 'public',
             'sslmode' => 'prefer',
         ],
+            // Neo4j Graph Database
+    'neo4j' => [
+        'scheme'   => env('NEO4J_SCHEME', 'bolt'),
+        'host'     => env('NEO4J_HOST', '127.0.0.1'),
+        'port'     => env('NEO4J_PORT', '7687'),
+        'username' => env('NEO4J_USERNAME', 'neo4j'),
+        'password' => env('NEO4J_PASSWORD', ''),
+    ],
 
         'sqlsrv' => [
             'driver' => 'sqlsrv',
