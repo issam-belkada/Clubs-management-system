@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('event_posts', function (Blueprint $table) {
-            $table->id();
+            $table->id()->autoIncrement();
             $table->foreignId('event_id')->constrained('events')->onDelete('cascade');
             $table->text('content');
             $table->string('post_image')->nullable();

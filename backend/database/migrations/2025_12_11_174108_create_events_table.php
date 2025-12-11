@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('events', function (Blueprint $table) {
-            $table->id();
+            $table->id()->autoIncrement();
             $table->string('title');
             $table->text('description')->nullable();
             $table->dateTime('start_time');
@@ -23,7 +23,7 @@ return new class extends Migration
             $table->foreignId('event_type_id')->constrained('event_types')->onDelete('cascade');
             $table->foreignId('club_id')->constrained('clubs')->onDelete('cascade');
             $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
-            $table->json_decode('custom_form')->nullable();
+            $table->json('custom_form')->nullable();
             $table->string('event_image')->nullable();
             $table->timestamps();
         });
