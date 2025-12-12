@@ -16,13 +16,13 @@ class EventPostController extends Controller
         // Inject Neo4j Aura client (configured via a ServiceProvider)
         $this->neo4j = app('neo4j');
     }
-    
+
     public function feed()
     {
         //
     }
 
-  
+
     public function trending()
     {
         //
@@ -35,7 +35,7 @@ class EventPostController extends Controller
             return response()->json(['message' => 'Event not found'], 404);
         }
         $posts = EventPost::where('event_id', $eventId)->paginate(10);
-        return response()->json(['data' => $posts], 200);
+        return response()->json(['data' => $posts,"event"=>$event], 200);
     }
     public function store(Request $request,$eventId)
     {
@@ -94,14 +94,14 @@ class EventPostController extends Controller
             'message' => 'Event post updated successfully!',
             'event_post' => $eventPost,
         ]);
-        
+
     }
 
-    
+
     public function destroy($id)
     {
         $eventPost = EventPost::find($id);
-        
+
         $eventPost->delete();
         return response()->json(['message' => 'Event post deleted successfully']);
     }
