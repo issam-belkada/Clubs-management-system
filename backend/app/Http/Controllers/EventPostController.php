@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\EventPost;
 use Illuminate\Http\Request;
 use App\Facades\Neo4j;
+use App\Models\Event;
 
 
 class EventPostController extends Controller

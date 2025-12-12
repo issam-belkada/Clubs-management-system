@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\SubmitClub;
 use App\Models\Submit;
+use Illuminate\Support\Facades\Auth;
+
+
 class SubmitController extends Controller
 {
     public function pendingEvents(Request $request)

@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Club;
-class ClubContoller extends Controller
+use App\Models\SubmitClub;
+use App\Models\User;
+class ClubController extends Controller
 {
     protected $neo4j;
     public function __construct()
@@ -98,7 +100,7 @@ class ClubContoller extends Controller
         if (!$club) {
             return response()->json(['message' => 'Club not found'], 404);
         }
-        $successful_submittion = SbmitClub::where('club_id',$id)->where('status','approved')->pluck('user_id')->toArray();
+        $successful_submittion = SubmitClub::where('club_id',$id)->where('status','approved')->pluck('user_id')->toArray();
         $members =  User::whereIn('id',$successful_submittion)->get();
         return response()->json(['data' => $members], 200);
     }
