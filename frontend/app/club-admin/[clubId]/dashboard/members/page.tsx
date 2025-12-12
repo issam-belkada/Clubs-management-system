@@ -22,7 +22,7 @@ export default function ManageMembersPage() {
         );
         if (response.ok) {
           const data = await response.json();
-          setMembers(data);
+          setMembers(data.data);
         }
       } catch (error) {
         console.error("Failed to fetch members", error);

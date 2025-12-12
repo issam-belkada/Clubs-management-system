@@ -1,22 +1,16 @@
+import Cookies from "universal-cookie";
+
+const cookies = new Cookies();
 const TOKEN_KEY = "authToken";
 
 export const storage = {
   getToken: (): string | null => {
-    if (typeof window === "undefined") {
-      return null;
-    }
-    return window.localStorage.getItem(TOKEN_KEY);
+    return cookies.get(TOKEN_KEY) || null;
   },
   setToken: (token: string) => {
-    if (typeof window === "undefined") {
-      return;
-    }
-    window.localStorage.setItem(TOKEN_KEY, token);
+    cookies.set(TOKEN_KEY, token, { path: "/" });
   },
   removeToken: () => {
-    if (typeof window === "undefined") {
-      return;
-    }
-    window.localStorage.removeItem(TOKEN_KEY);
+    cookies.remove(TOKEN_KEY, { path: "/" });
   },
 };

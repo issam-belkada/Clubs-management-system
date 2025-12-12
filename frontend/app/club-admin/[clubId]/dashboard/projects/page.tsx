@@ -3,11 +3,13 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/MyContext";
 import { Project } from "@/lib/types";
 import { Button } from "@/components/ui/button";
+import { useParams } from "next/navigation";
 
 export default function ManageProjectsPage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const { token } = useAuth();
-  const clubId = 1; // Placeholder
+  const params = useParams();
+  const clubId = params.clubId ; // Placeholder
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -36,7 +38,12 @@ export default function ManageProjectsPage() {
 
   return (
     <div className="container mx-auto">
-      <h1 className="my-8 text-4xl font-bold">Manage Projects</h1>
+      <div className="flex justify-between items-center my-8">
+        <h1 className="text-4xl font-bold">Manage Projects</h1>
+        <Button onClick={() => window.location.href = `/club-admin/${params.clubId}/dashboard/projects/new`}>
+          Add Project
+        </Button>
+      </div>
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white">
           <thead>
@@ -52,6 +59,13 @@ export default function ManageProjectsPage() {
                 <td className="px-6 py-4 border-b">{project.name}</td>
                 <td className="px-6 py-4 border-b">{project.description}</td>
                 <td className="px-6 py-4 border-b">
+                  <Button 
+                    className="mr-2" 
+                    variant="outline"
+                    onClick={() => window.location.href = `/club-admin/${params.clubId}/dashboard/projects/${project.id}`}
+                  >
+                    Tasks
+                  </Button>
                   <Button className="mr-2">Edit</Button>
                   <Button variant="destructive">Delete</Button>
                 </td>

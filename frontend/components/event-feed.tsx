@@ -3,132 +3,61 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { EventCard } from "@/components/event-card";
 import { Loader2 } from "lucide-react";
-import { mockEvents } from "@/lib/mock-data";
 import axios from "axios";
 
 interface EventFeedProps {
-  searchQuery: string;
-  selectedCategory: string | null;
+  searchQuery?: string;
+  selectedCategory?: string | null;
+  endpoint?: string;
 }
 
-const EVENTS_PER_PAGE = 8;
-
-export function EventFeed({ searchQuery, selectedCategory }: EventFeedProps) {
-  const [displayedEvents, setDisplayedEvents] = useState([]);
-  const [page, setPage] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
-  const observerTarget = useRef<HTMLDivElement>(null);
-
-  // Filter events based on search and category
-  const filteredEvents = mockEvents.filter((event) => {
-    const matchesSearch =
-      searchQuery === "" ||
-      event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      event.club.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      event.description.toLowerCase().includes(searchQuery.toLowerCase());
-
-    const matchesCategory =
-      selectedCategory === null || event.category === selectedCategory;
-
-    return matchesSearch && matchesCategory;
-  });
+export function EventFeed({ searchQuery, selectedCategory, endpoint = "event-posts/" }: EventFeedProps) {
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetch = async () => {
+    const fetchEvents = async () => {
       try {
-        // Fetch events from your API
-        const res = await axios.get("http://localhost:8000/api/event-posts");
-        console.log("Fetched events:", res.data.data);
-        res.data.data.map(async (event: any) => {
-          const res1 = await axios.get(
-            "http://localhost:8000/api/events/" + event.event_id
-          );
-          console.log("Fetched event details:", res1.data);
-          return [...event, ...res1.data];
-        });
-
-        setDisplayedEvents(res.data.data);
+        setLoading(true);
+        // Ensure endpoint handles trailing slash if needed, but here simple concatenation usually works if strict
+        const url = `http://localhost:8000/api/${endpoint}`;
+        const res = await axios.get(url);
+        console.log("Fetched feed:", res.data);
+        if (res.data.status === "success" || Array.isArray(res.data.data)) {
+             setEvents(res.data.data || []);
+        }
       } catch (error) {
-        console.error("Error fetching events:", error);
+        console.error("Error fetching event posts:", error);
+      } finally {
+        setLoading(false);
       }
     };
-    fetch();
+    fetchEvents();
   }, []);
 
-  // Load more events
-  const loadMore = useCallback(() => {
-    if (isLoading || !hasMore) return;
-
-    setIsLoading(true);
-    // Simulate network delay
-    setTimeout(() => {
-      const nextPage = page + 1;
-      const startIndex = 0;
-      const endIndex = nextPage * EVENTS_PER_PAGE;
-
-      const newEvents = filteredEvents.slice(0, endIndex);
-      setDisplayedEvents(newEvents);
-      setPage(nextPage);
-      setIsLoading(false);
-
-      if (endIndex >= filteredEvents.length) {
-        setHasMore(false);
-      }
-    }, 500);
-  }, [page, isLoading, hasMore, filteredEvents]);
-
-  // Infinite scroll observer
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasMore && !isLoading) {
-          loadMore();
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    if (observerTarget.current) {
-      observer.observe(observerTarget.current);
-    }
-
-    return () => observer.disconnect();
-  }, [loadMore, hasMore, isLoading]);
-
-  // Reset when filters change
-  useEffect(() => {
-    setPage(1);
-    setHasMore(true);
-  }, [searchQuery, selectedCategory, filteredEvents]);
-
   return (
-    <div className="flex flex-col items-center space-y-4">
-      {displayedEvents.length === 0 ? (
-        <div className="py-12 text-center">
-          <p className="text-muted-foreground">
-            No events found. Try adjusting your filters.
-          </p>
-        </div>
-      ) : (
-        <>
-          {displayedEvents.map((event, idx) => (
-            <EventCard key={idx} event={event} />
-          ))}
+    <div className="w-full max-w-xl mx-auto pb-20">
+      {/* Create Post input placeholder - optional for typical social feed */}
+      {/* 
+      <div className="bg-card rounded-lg p-4 mb-6 shadow-sm border border-border">
+         <input type="text" placeholder="What's on your mind?" className="w-full bg-muted/50 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 ring-primary/20" />
+      </div> 
+      */}
 
-          {/* Infinite scroll trigger */}
-          <div ref={observerTarget} className="py-8 flex justify-center">
-            {isLoading ? (
-              <Loader2 className="w-6 h-6 animate-spin text-primary" />
-            ) : hasMore ? (
-              <p className="text-muted-foreground text-sm">
-                Loading more events...
-              </p>
-            ) : (
-              <p className="text-muted-foreground text-sm">No more events</p>
-            )}
+      {events.map((event: any) => (
+        <EventCard key={event.id} event={event} />
+      ))}
+
+      {loading && (
+        <div className="flex justify-center py-8">
+           <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        </div>
+      )}
+
+      {!loading && events.length === 0 && (
+          <div className="text-center py-10 text-muted-foreground">
+              No posts found.
           </div>
-        </>
       )}
     </div>
   );

@@ -33,3 +33,14 @@ export interface Project {
   name: string;
   description: string;
 }
+
+export interface Task {
+  id?: number;
+  title: string;
+  description: string;
+  start_date: string;
+  end_date: string;
+  due_date: string;
+  status: 'pending' | 'in_progress' | 'completed';
+  assigned_to: number;
+}

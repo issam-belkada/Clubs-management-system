@@ -3,7 +3,10 @@
 import { useEffect, useState } from "react"
 import { X, Send, MessageCircle } from "lucide-react"
 import axios from "axios"
-
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 interface Message {
   id: string
@@ -118,81 +121,88 @@ Be friendly, concise, and persuasive so the user will want to join the recommend
     <>
       {/* Floating Chat Button */}
       {!isOpen && (
-        <button
+        <Button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-gradient-to-br from-[#1B5E20] to-[#0D3B15] hover:bg-gradient-to-br hover:from-[#154718] hover:to-[#07200b] text-white shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center z-40"
+          className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 z-40 bg-primary hover:bg-primary/90"
           aria-label="Open chat"
         >
-          <MessageCircle size={24} />
-        </button>
+          <MessageCircle className="h-6 w-6" />
+        </Button>
       )}
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="fixed bottom-6 right-6 w-96 max-h-[600px] bg-white rounded-lg shadow-2xl flex flex-col overflow-hidden z-50">
+        <Card className="fixed bottom-6 right-6 w-80 sm:w-96 h-[500px] shadow-2xl flex flex-col overflow-hidden z-50 border-border animate-in slide-in-from-bottom-5 duration-300">
           {/* Header */}
-          <div className="bg-[#1B5E20] text-white px-6 py-4 flex items-center justify-between">
-            <h3 className="text-lg font-semibold">chatbot</h3>
-            <button
+          <CardHeader className="bg-primary text-primary-foreground p-4 flex flex-row items-center justify-between space-y-0">
+            <div className="flex items-center gap-2">
+                 <MessageCircle className="h-5 w-5" />
+                 <CardTitle className="text-base font-medium">Assistant</CardTitle>
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={() => setIsOpen(false)}
-              className="text-white hover:bg-[#0D3B15] p-1 rounded transition-colors"
+              className="text-primary-foreground hover:bg-primary-foreground/20 h-8 w-8"
               aria-label="Close chat"
             >
-              <X size={20} />
-            </button>
-          </div>
+              <X className="h-4 w-4" />
+            </Button>
+          </CardHeader>
 
           {/* Messages Container */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
-            {chat.map((message, index) => (
-              <div key={index} className={`flex ${message.stl ? "justify-end" : "justify-start"}`}>
-                <div
-                  className={`max-w-xs px-4 py-3 rounded-lg ${
-                    message.stl
-                      ? "bg-[#1B5E20] text-white rounded-br-none"
-                      : "bg-gray-100 text-gray-800 rounded-bl-none"
-                  }`}
+          <CardContent className="flex-1 overflow-hidden p-0 flex flex-col">
+             <ScrollArea className="flex-1 p-4">
+                <div className="space-y-4">
+                    {chat.map((message, index) => (
+                    <div key={index} className={`flex ${message.stl ? "justify-end" : "justify-start"}`}>
+                        <div
+                        className={`max-w-[80%] px-4 py-2 rounded-lg text-sm ${
+                            message.stl
+                            ? "bg-primary text-primary-foreground rounded-br-none"
+                            : "bg-muted text-foreground rounded-bl-none"
+                        }`}
+                        >
+                        {message.input}
+                        </div>
+                    </div>
+                    ))}
+                    {loading && (
+                    <div className="flex justify-start">
+                        <div className="bg-muted px-4 py-2 rounded-lg rounded-bl-none">
+                        <div className="flex space-x-1">
+                            <div className="w-2 h-2 bg-muted-foreground/40 rounded-full animate-bounce"></div>
+                            <div className="w-2 h-2 bg-muted-foreground/40 rounded-full animate-bounce delay-75"></div>
+                            <div className="w-2 h-2 bg-muted-foreground/40 rounded-full animate-bounce delay-150"></div>
+                        </div>
+                        </div>
+                    </div>
+                    )}
+                </div>
+             </ScrollArea>
+             
+             {/* Input Area */}
+             <div className="p-4 border-t bg-background">
+                <div className="flex gap-2">
+                <Input
+                    value={text}
+                    onChange={(e) => setText(e.target.value)}
+                    onKeyPress={(e) => e.key === "Enter" && handleText()}
+                    placeholder="Type your question..."
+                    className="flex-1"
+                />
+                <Button
+                    onClick={handleText}
+                    disabled={loading || !text.trim()}
+                    size="icon"
+                    className="shrink-0"
                 >
-                  <p className="text-sm">{message.input}</p>
+                    <Send className="h-4 w-4" />
+                </Button>
                 </div>
-              </div>
-            ))}
-            {loading && (
-              <div className="flex justify-start">
-                <div className="bg-gray-100 text-gray-800 px-4 py-3 rounded-lg rounded-bl-none">
-                  <div className="flex space-x-2">
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-100"></div>
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-200"></div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Input Area */}
-          <div className="border-t border-gray-200 p-4 space-y-2">
-            <p className="text-xs text-gray-500 text-center">ask me </p>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-                onKeyPress={(e) => e.key === "Enter" && handleText()}
-                placeholder="Type your question..."
-                className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#1B5E20]"
-              />
-              <button
-                onClick={handleText}
-                disabled={loading || !text.trim()}
-                className="bg-[#1B5E20] text-white p-2 rounded-lg hover:bg-[#0D3B15] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                aria-label="Send message"
-              >
-                <Send size={18} />
-              </button>
-            </div>
-          </div>
-        </div>
+             </div>
+          </CardContent>
+        </Card>
       )}
     </>
   )

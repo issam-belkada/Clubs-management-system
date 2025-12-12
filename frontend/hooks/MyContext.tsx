@@ -8,7 +8,7 @@ const cookies = new Cookies();
 interface AuthContextType {
   token: string | null;
   user: User | null;
-  login: (user: { token: string; roles: string[] }) => void;
+  login: (data: any) => void;
   logout: () => void;
 }
 
@@ -20,16 +20,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const storedToken = cookies.get("authToken");
+    const storedUser = cookies.get("userData");
     if (storedToken) {
       setToken(storedToken);
-      // You might want to fetch user data here if the token is valid
+    }
+    if (storedUser) {
+        setUser(storedUser);
     }
   }, []);
 
-  const login = (userData: { token: string; roles: string[] }) => {
-    setToken(userData.token);
-    cookies.set("authToken", userData.token, { path: "/" });
-    cookies.set("userRoles", userData.roles, { path: "/" });
+  const login = (data: any) => {
+    const token = data.token;
+    const roles = data.role; // API returns 'role' as array of strings
+    
+    setToken(token);
+    // Map API user to internal User type
+    setUser({
+        ...data.user,
+        roles: roles
+    });
+    
+    cookies.set("authToken", token, { path: "/" });
+    cookies.set("userRoles", roles, { path: "/" });
+    cookies.set("userData", JSON.stringify({ ...data.user, roles: roles }), { path: "/" });
   };
 
   const logout = () => {
@@ -37,6 +50,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
     cookies.remove("authToken", { path: "/" });
     cookies.remove("userRoles", { path: "/" });
+    cookies.remove("userData", { path: "/" });
   };
 
   return (
