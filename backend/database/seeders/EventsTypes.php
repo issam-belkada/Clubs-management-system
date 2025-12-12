@@ -12,7 +12,7 @@ class EventsTypes extends Seeder
      */
     public function run(): void
     {
-        $types = ['Workshop', 'Seminar', 'Social', 'Fundraiser', 'Competition', 'Networking', 'Webinar', 'Conference', 'Meetup', 'Hackathon'];
+        $types =  ['Workshop', 'Seminar', 'Social', 'Fundraiser', 'Competition', 'Networking', 'Webinar', 'Conference', 'Meetup', 'Hackathon'];
 
         foreach ($types as $type) {
             EventType::create(['name' => $type]);

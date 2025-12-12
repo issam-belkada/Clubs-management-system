@@ -46,6 +46,11 @@ public function feed(Request $request)
         ], 200);
     }
 
+    /** ============================================================
+     * 2. LOGGED IN USERS → NORMAL FEED
+     * ============================================================ */
+
+    // Find clubs the user follows
     $followedClubsResult = $this->neo4j->run(
         'MATCH (u:User {id: $userId})-[:FOLLOWS]->(c:Club)
          RETURN c.id AS clubId',
@@ -57,7 +62,7 @@ public function feed(Request $request)
         $followedClubIds[] = $record->get('clubId');
     }
 
- 
+    /** If user follows *no clubs* → fallback to trending posts */
     if (count($followedClubIds) === 0) {
         $fallbackTrending = $this->neo4j->run(
             'MATCH (p:EventPost)
@@ -80,7 +85,9 @@ public function feed(Request $request)
         ], 200);
     }
 
-
+    /** ============================================================
+     * 3. FETCH EVENTS FROM FOLLOWED CLUBS
+     * ============================================================ */
     $events = Event::whereIn('club_id', $followedClubIds)
         ->with(['posts' => function ($query) {
             $query->orderBy('created_at', 'desc');
@@ -116,6 +123,7 @@ public function feed(Request $request)
                 ['userId' => $userId, 'postId' => $post->id]
             );
             $post->user_liked = $userLiked->records()[0]?->get('count') > 0;
+
             // Whether current user saved
             $userSaved = $this->neo4j->run(
                 'MATCH (u:User {id: $userId})-[:SAVED]->(p:EventPost {id: $postId})
@@ -132,6 +140,8 @@ public function feed(Request $request)
         "data" => $events
     ], 200);
 }
+
+
 public function trending(Request $request)
 {
     // Query Neo4j for trending posts based on engagement

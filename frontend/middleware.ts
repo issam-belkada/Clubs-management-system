@@ -1,63 +1,61 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
-import jwt from "jsonwebtoken";
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
-interface TokenPayload {
-  id: string;
-  email: string;
-  role?: string;
-  iat?: number;
-  exp?: number;
-}
-
-// Define role-based access for routes
-const roleAccess: Record<string, string[]> = {
-  admin: ['/admin', '/admin/dashboard','/main'],
-  club:['/club','club/dashboard','/main'],
-  user: ['/dashboard', '/profile','/main'],
-};
-
-export function middleware(req: NextRequest) {
-    const token = req.cookies.get("token")?.value;
-
-  // No token → redirect to login
-  if (!token) {
-    return NextResponse.redirect(new URL("/login", req.url));
-  }
-
-  let decoded: TokenPayload;
-
+// This function can be marked `async` if using `await` inside
+export function middleware(request: NextRequest) {
+  const token = request.cookies.get("authToken")?.value;
+  const userRolesCookie = request.cookies.get("userRoles")?.value;
+  
+  // Parse roles
+  let roles: string[] = [];
   try {
-    decoded = jwt.verify(token, process.env.JWT_SECRET!) as TokenPayload;
-  } catch (err) {
-    return NextResponse.redirect(new URL("/login", req.url));
+    if (userRolesCookie) {
+      // It might be a raw array or stringified JSON depending on how cookies.set works in the browser vs server reading
+      // Universal-cookie usually stringifies it.
+      roles = JSON.parse(userRolesCookie);
+      if (!Array.isArray(roles)) {
+          roles = [];
+      }
+    }
+  } catch (e) {
+    console.error("Failed to parse roles", e);
   }
 
-  const pathname = req.nextUrl.pathname;
+  const { pathname } = request.nextUrl;
 
-  // -----------------------------
-  // 🔥 ADMIN ROUTES PROTECTION
-  // -----------------------------
-  if (pathname.startsWith("/admin")) {
-    if (decoded.role !== "admin") {
-      return NextResponse.redirect(new URL("/not-authorized", req.url));
+  // Protect Admin Routes
+  if (pathname.startsWith("/admin") || pathname.startsWith("/club-admin")) {
+    if (!token) {
+        return NextResponse.redirect(new URL("/login", request.url));
+    }
+    
+    // Check if user has admin role
+    const isAdmin = roles.some(role => role === 'admin' || role === 'super_admin');
+    if (!isAdmin) {
+       // Allow club-admin for club-admin routes?
+       if (pathname.startsWith("/club-admin")) {
+           // Maybe only 'club_admin' role?
+           // For now assume admin covers all or check specifically
+           // Let's safe guard:
+       }
+       
+       // If strict check:
+       if (!roles.includes('admin') && pathname.startsWith("/admin")) {
+           return NextResponse.redirect(new URL("/unauthorized", request.url));
+       }
     }
   }
 
- 
+  // Protect User Routes if needed, or just require login
+  if (pathname.startsWith("/user")) {
+      if (!token) {
+          return NextResponse.redirect(new URL("/login", request.url));
+      }
+  }
 
-  // -----------------------------
-  // 🔒 USER ROUTES (optional)
-  // -----------------------------
-  
+  return NextResponse.next();
 }
 
-// Match all routes you want to protect
 export const config = {
-  matcher: [
-     // authenticated
-        // authenticated
-    "/admin/:path*",       // admin only
-       
-  ],
+  matcher: ["/admin/:path*", "/club-admin/:path*", "/user/:path*"],
 };

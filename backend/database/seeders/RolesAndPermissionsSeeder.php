@@ -110,6 +110,6 @@ class RolesAndPermissionsSeeder extends Seeder
         $user->givePermissionTo([
             'view posts',
         ]);
-        User::find(1)->assignRole('admin');
+        
     }
 }
