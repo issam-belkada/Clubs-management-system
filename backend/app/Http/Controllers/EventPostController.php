@@ -7,10 +7,6 @@ use Illuminate\Http\Request;
 use App\Facades\Neo4j;
 use App\Models\Event;
 use Illuminate\Support\Facades\Auth;
-<<<<<<< HEAD
-
-=======
->>>>>>> 747dd059d300b612b26aa67a59af0f055d0ac1fb
 
 class EventPostController extends Controller
 {

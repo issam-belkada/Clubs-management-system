@@ -29,7 +29,7 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
-        $user->role = 'user';
+        $user->assignRole('user');
         $user->save();
 
          try {
