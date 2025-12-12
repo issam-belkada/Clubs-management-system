@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Event;
 use App\Models\Attendance;
+use App\Models\Club;
 use App\Models\Submit;
+use Illuminate\Container\Attributes\Auth;
+
 class EventsController extends Controller
 {
     protected $neo4j;
@@ -36,11 +39,17 @@ class EventsController extends Controller
             'status' => 'in:scheduled,ongoing,completed,cancelled|default:scheduled',
             'location' => 'nullable|string|max:255',
             'event_type_id' => 'required|integer|exists:event_types,id',
-            'club_id' => 'required|integer|exists:clubs,id',
             'created_by' => 'required|integer|exists:users,id',
             'custom_form' => 'nullable|json',
             'event_image' => 'nullable|string|max:255'
         ]);
+       
+            $userId = Auth()->user()->id;
+            $eventClub = Club::findBy('created_by', $userId);
+            if(!$eventClub){
+                return response()->json(['message' => 'You do not have a club'], 403);
+            }
+        
         $event = Event::create($request->all());
         return response()->json(['data' => $event], 201);
     }
@@ -55,7 +64,6 @@ class EventsController extends Controller
             'end_time' => 'required',
             'location' => 'nullable|string|max:255',
             'event_type_id' => 'required|integer|exists:event_types,id',
-            'club_id' => 'required|integer|exists:clubs,id',
             'created_by' => 'required|integer|exists:users,id',
             'custom_form' => 'nullable|json',
             'event_image' => 'nullable|string|max:255'
