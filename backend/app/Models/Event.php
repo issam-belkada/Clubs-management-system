@@ -23,4 +23,8 @@ class Event extends Model
     {
         return $this->belongsTo(Club::class);
     }
+    public function posts(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(EventPost::class);
+    }
 }

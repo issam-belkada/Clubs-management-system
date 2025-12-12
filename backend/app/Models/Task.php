@@ -12,6 +12,8 @@ class Task extends Model
         'due_date',
         'status',
         'project_id',
+        "start_date",
+        "end_date",
         'assigned_to'
     ];
     public function project(): \Illuminate\Database\Eloquent\Relations\BelongsTo

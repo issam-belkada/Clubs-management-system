@@ -3,10 +3,25 @@
 use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+<<<<<<< HEAD
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\EventPostController;
 use App\Http\Controllers\ProjectController;
 
+=======
+use App\Http\Controllers\ClubController;
+use App\Http\Controllers\EventPostController;
+use App\Http\Controllers\EventsControllers;
+use App\Http\Controllers\TaskController;
+use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\ResourceController;
+use App\Http\Controllers\EventTypeController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\SubmitController;
+use App\Http\Controllers\SubmitClubController;
+use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\DiscoverController;
+>>>>>>> e7f14e0bb7a58bb2db9148ed7635537cf339f44d
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
@@ -24,46 +39,50 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::prefix('clubs')->group(function () {
     Route::get('/', [ClubController::class, 'index']);
     Route::post('/', [ClubController::class, 'store'])->middleware('auth:sanctum');
-    
+
     Route::prefix('{club}')->group(function () {
         Route::get('/', [ClubController::class, 'show']);
         Route::put('/', [ClubController::class, 'update'])->middleware('auth:sanctum');
         Route::delete('/', [ClubController::class, 'destroy'])->middleware('auth:sanctum');
-        
+
         // Club Members
         Route::get('/members', [ClubController::class, 'members']);
         Route::post('/members', [ClubController::class, 'addMember'])->middleware('auth:sanctum');
         Route::put('/members/{user}', [ClubController::class, 'updateMemberRole'])->middleware('auth:sanctum');
         Route::delete('/members/{user}', [ClubController::class, 'removeMember'])->middleware('auth:sanctum');
-        
+        Route::post('/follow', [ClubController::class, 'follow'])->middleware('auth:sanctum');
+        Route::delete('/unfollow', [ClubController::class, 'unfollow'])->middleware('auth:sanctum');
         // Club Resources
         Route::get('/resources', [ResourceController::class, 'index']);
         Route::post('/resources', [ResourceController::class, 'store'])->middleware('auth:sanctum');
-        
+        Route::get('/search', [ClubController::class, 'search']);
         // Club Projects
         Route::get('/projects', [ProjectController::class, 'index']);
         Route::post('/projects', [ProjectController::class, 'store'])->middleware('auth:sanctum');
-        
+
         // Club Events
-        Route::get('/events', [EventController::class, 'clubEvents']);
+        Route::get('/events', [EventsController::class, 'clubEvents']);
     });
 });
 
 
 Route::prefix('events')->group(function () {
-    Route::get('/', [EventController::class, 'index']);
-    Route::post('/', [EventController::class, 'store'])->middleware('auth:sanctum');
-    
+    Route::get('/', [EventsController::class, 'index']);
+    Route::post('/', [EventsController::class, 'store'])->middleware('auth:sanctum');
+
     Route::prefix('{event}')->group(function () {
-        Route::get('/', [EventController::class, 'show']);
-        Route::put('/', [EventController::class, 'update'])->middleware('auth:sanctum');
-        Route::delete('/', [EventController::class, 'destroy'])->middleware('auth:sanctum');
-        
+        Route::get('/', [EventsController::class, 'show']);
+        Route::put('/', [EventsController::class, 'update'])->middleware('auth:sanctum');
+        Route::delete('/', [EventsController::class, 'destroy'])->middleware('auth:sanctum');
+
         // Event Participation
-        Route::post('/attend', [EventController::class, 'attend'])->middleware('auth:sanctum');
-        Route::delete('/attend', [EventController::class, 'unattend'])->middleware('auth:sanctum');
-        Route::get('/attendees', [EventController::class, 'attendees']);
-        
+        Route::post('/attend', [EventsController::class, 'attend'])->middleware('auth:sanctum');
+        Route::delete('/attend', [EventsController::class, 'unattend'])->middleware('auth:sanctum');
+        Route::get('/attendees', [EventsController::class, 'attendees']);
+        Route::post('/submit', [EventsController::class, 'submitForApproval'])->middleware('auth:sanctum');
+        Route::get('/submissions', [EventsController::class, 'mySubmissions'])->middleware('auth:sanctum');
+        Route::put('/submissions/{submission}', [EventsController::class, 'reviewSubmission'])->middleware('auth:sanctum')->middleware('can:review submissions');
+
         // Event Posts (Social Feed)
         Route::get('/posts', [EventPostController::class, 'index']);
         Route::post('/posts', [EventPostController::class, 'store'])->middleware('auth:sanctum');
@@ -74,12 +93,12 @@ Route::prefix('events')->group(function () {
 Route::prefix('event-posts')->group(function () {
     Route::get('/', [EventPostController::class, 'feed']); // Main feed
     Route::get('/trending', [EventPostController::class, 'trending']);
-    
+
     Route::prefix('{eventPost}')->group(function () {
         Route::get('/', [EventPostController::class, 'show']);
         Route::put('/', [EventPostController::class, 'update'])->middleware('auth:sanctum');
         Route::delete('/', [EventPostController::class, 'destroy'])->middleware('auth:sanctum');
-        
+
         // Interactions
         Route::post('/like', [EventPostController::class, 'like'])->middleware('auth:sanctum');
         Route::delete('/like', [EventPostController::class, 'unlike'])->middleware('auth:sanctum');
@@ -95,12 +114,12 @@ Route::prefix('event-posts')->group(function () {
 Route::prefix('projects')->group(function () {
     Route::get('/', [ProjectController::class, 'index']);
     Route::post('/', [ProjectController::class, 'store'])->middleware('auth:sanctum');
-    
+
     Route::prefix('{project}')->group(function () {
         Route::get('/', [ProjectController::class, 'show']);
         Route::put('/', [ProjectController::class, 'update'])->middleware('auth:sanctum');
         Route::delete('/', [ProjectController::class, 'destroy'])->middleware('auth:sanctum');
-        
+
         // Project Tasks
         Route::get('/tasks', [TaskController::class, 'index']);
         Route::post('/tasks', [TaskController::class, 'store'])->middleware('auth:sanctum');
@@ -109,9 +128,7 @@ Route::prefix('projects')->group(function () {
 
 
 Route::prefix('tasks')->middleware('auth:sanctum')->group(function () {
-    Route::get('/', [TaskController::class, 'index']);
-    Route::post('/', [TaskController::class, 'store']);
-    
+
     Route::prefix('{task}')->group(function () {
         Route::get('/', [TaskController::class, 'show']);
         Route::put('/', [TaskController::class, 'update']);
@@ -124,10 +141,10 @@ Route::prefix('tasks')->middleware('auth:sanctum')->group(function () {
 Route::prefix('resources')->group(function () {
     Route::get('/', [ResourceController::class, 'index']);
     Route::post('/', [ResourceController::class, 'store'])->middleware('auth:sanctum');
-    
+
     Route::prefix('{resource}')->group(function () {
         Route::get('/', [ResourceController::class, 'show']);
-        Route::get('/download', [ResourceController::class, 'download']);
+
         Route::put('/', [ResourceController::class, 'update'])->middleware('auth:sanctum');
         Route::delete('/', [ResourceController::class, 'destroy'])->middleware('auth:sanctum');
     });
@@ -135,12 +152,8 @@ Route::prefix('resources')->group(function () {
 
 Route::prefix('event-types')->middleware(['auth:sanctum', 'can:manage event_types'])->group(function () {
     Route::get('/', [EventTypeController::class, 'index']);
-    Route::post('/', [EventTypeController::class, 'store']);
-    
     Route::prefix('{eventType}')->group(function () {
         Route::get('/', [EventTypeController::class, 'show']);
-        Route::put('/', [EventTypeController::class, 'update']);
-        Route::delete('/', [EventTypeController::class, 'destroy']);
     });
 });
 
@@ -149,18 +162,18 @@ Route::prefix('event-types')->middleware(['auth:sanctum', 'can:manage event_type
 Route::prefix('submissions')->middleware('auth:sanctum')->group(function () {
     Route::get('/events', [SubmitController::class, 'pendingEvents']);
     Route::post('/events', [SubmitController::class, 'submitEvent']);
-    Route::put('/events/{event}', [SubmitController::class, 'reviewEvent'])->middleware('can:review events');
-    
+    Route::delete('/events/{event}', [SubmitController::class, 'cancleEventSubmission']);
+
     Route::get('/clubs', [SubmitClubController::class, 'pendingClubs']);
     Route::post('/clubs', [SubmitClubController::class, 'submitClub']);
-    Route::put('/clubs/{club}', [SubmitClubController::class, 'reviewClub'])->middleware('can:review clubs');
+    Route::put('/clubs/{submisionId}', [SubmitClubController::class, 'reviewClub'])->middleware('can:review clubs');
 });
 
 Route::prefix('attendance')->middleware('auth:sanctum')->group(function () {
     // Pour les organisateurs/club admins
     Route::post('/events/{event}/mark', [AttendanceController::class, 'markAttendance'])->middleware('can:mark attendance');
-    Route::get('/events/{event}/report', [AttendanceController::class, 'attendanceReport'])->middleware('can:view attendance');
-    
+    Route::get('/events/{event}/report', [AttendanceController::class, 'getAttendance'])->middleware('can:view attendance');
+
     // Pour les utilisateurs
     Route::get('/my-attendance', [AttendanceController::class, 'myAttendance']);
 });
