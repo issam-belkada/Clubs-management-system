@@ -3,12 +3,6 @@
 use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-<<<<<<< HEAD
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\EventPostController;
-use App\Http\Controllers\ProjectController;
-
-=======
 use App\Http\Controllers\ClubController;
 use App\Http\Controllers\EventPostController;
 use App\Http\Controllers\EventsControllers;
@@ -21,7 +15,6 @@ use App\Http\Controllers\SubmitController;
 use App\Http\Controllers\SubmitClubController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\DiscoverController;
->>>>>>> e7f14e0bb7a58bb2db9148ed7635537cf339f44d
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
@@ -106,8 +99,8 @@ Route::prefix('event-posts')->group(function () {
         Route::delete('/save', [EventPostController::class, 'unsave'])->middleware('auth:sanctum');
       
     });
-    Route::get( '/likes', [EventPostController::class, 'likes'])
-});
+    Route::get('/likes', [EventPostController::class, 'likes']);
+})
 
 
 
