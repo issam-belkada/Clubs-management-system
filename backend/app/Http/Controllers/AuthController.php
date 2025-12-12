@@ -49,7 +49,7 @@ class AuthController extends Controller
            return response()->json([
                 'message' => 'User created in primary database, but failed to create in Neo4j: '.$e->getMessage(),
                 'user' => $user,
-                'role' => $user->role,
+                'role' => $user->role()->get(),
             ], 201);
         }
 

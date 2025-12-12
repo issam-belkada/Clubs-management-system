@@ -39,10 +39,10 @@ class ClubController extends Controller
             'border_image' => 'nullable|string|max:255',
             'created_by' => 'required|integer|exists:users,id'
         ]);
-        $club = Club::create($request->all());
+        $club = Club::create($validatedData);
         $createdByUser = User::find($request->input('created_by'));
         if ($createdByUser) {
-            $createdByUser->role = 'club_admin';
+            $createdByUser->assignRole('club_admin');
             $createdByUser->save();
         }
         return response()->json(['data' => $club], 201);
@@ -131,7 +131,7 @@ class ClubController extends Controller
             'status' => 'approved',
             'form_data' => json_encode([]),
         ]);
-        User::find($request->input('user_id'))->role='club_member';
+        User::find($request->input('user_id'))->assignRole('club_member');
         return response()->json(['data' => $submit], 201);
     }
     public function removeMember($clubId, $userId)
