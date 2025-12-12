@@ -16,14 +16,49 @@ class RolesAndPermissionsSeeder extends Seeder
         // Permissions
         $permissions = [
             'view users',
-            'create users',
-            'edit users',
-            'delete users',
+            'assign roles',
+            'create clubs',
+            'edit clubs',
+            'delete clubs',
+
+            "see club members",
+            'accept memebers',
+            'remove members',
+
+
+
+            'create events',
+            'edit events',
+            'delete events',
+
+            'create posts',
+            'edit posts',
+            'delete posts',
+
+            'create projects',
+            'edit projects',
+            'delete projects',
+
+            'create tasks',
+            'edit tasks',
+            'delete tasks',
+
+            "create resources",
+            "edit resources",
+            "delete resources",
+
 
             'view posts',
             'create posts',
             'edit posts',
             'delete posts',
+
+
+            "review club submissions",
+            "review event submissions",
+
+            "mark attendance",
+            "view attendance",
         ];
 
         foreach ($permissions as $permission) {
@@ -42,7 +77,39 @@ class RolesAndPermissionsSeeder extends Seeder
         $club_admin->givePermissionTo([
             'view users',
             'accept memebers',
-            ''
+            'remove members',
+            'create clubs',
+            'edit clubs',
+            'delete clubs',
+            'create events',
+            'edit events',
+            'delete events',
+            'create posts',
+            'edit posts',
+            'delete posts',
+            'create projects',
+            'edit projects',
+            'delete projects',
+            'create tasks',
+            'edit tasks',
+            'delete tasks',
+            "create resources",
+            "edit resources",
+            "see club members",
+            "delete resources",
+            "review club submissions",
+            "review event submissions",
+            "mark attendance",
+            "view attendance",
+
+        ]);
+        $club_memeber ->givePermissionTo([
+            'create posts',
+            'create tasks',
+            'view posts',
+            "mark attendance",
+            "review event submissions",
+            "view attendance",
         ]);
 
         $user->givePermissionTo([

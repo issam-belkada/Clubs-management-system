@@ -29,9 +29,11 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
+        $user->role = 'user';
+        $user->save();
 
          try {
-            
+
             $this->neo4j->run(
                 'MERGE (u:User {id: $id})
                  SET u.name = $name, u.email = $email, u.created_at = $created_at',
