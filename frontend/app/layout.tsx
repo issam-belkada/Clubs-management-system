@@ -5,6 +5,7 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import '@coreui/coreui/dist/css/coreui.min.css';
   import { ToastContainer } from 'react-toastify';
 
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],

@@ -38,11 +38,7 @@ export function middleware(req: NextRequest) {
   // -----------------------------
   // 🔥 ADMIN ROUTES PROTECTION
   // -----------------------------
-  if (pathname.startsWith("/admin")) {
-    if (decoded.role !== "admin") {
-      return NextResponse.redirect(new URL("/not-authorized", req.url));
-    }
-  }
+
 
  
 
@@ -57,7 +53,7 @@ export const config = {
   matcher: [
      // authenticated
         // authenticated
-    "/admin/:path*",       // admin only
+          // admin only
        
   ],
 };

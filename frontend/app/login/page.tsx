@@ -37,6 +37,7 @@ export default function LoginPage() {
       console.log(res.data);
       toast.success("Login successful!");
       cookies.set("token", res.data.token);
+      cookies.set("role", res.data.role);
       router.push("/main");
     } catch (err) {
       toast.error("Login failed. Please check your credentials.");
@@ -102,7 +103,7 @@ export default function LoginPage() {
       </div>
 
       <Card
-        className="max-w-md hover-lift shadow-2xl relative z-10 opacity-100 w-[126%] mx-[0] border-transparent"
+        className="max-w-md hover-lift  relative z-10 opacity-100 w-[126%] mx-[0] border-transparent"
         style={{
           background: "rgba(255, 255, 255, 0.25)",
           backdropFilter: "blur(40px) saturate(250%)",
@@ -115,7 +116,7 @@ export default function LoginPage() {
           <CardTitle className="text-3xl font-bold font-sans text-card-foreground">
             Welcome Back
           </CardTitle>
-          <CardDescription className="text-card-foreground/70 font-sans">
+          <CardDescription className=" font-sans">
             Sign in to your account to continue
           </CardDescription>
         </CardHeader>
@@ -160,7 +161,7 @@ export default function LoginPage() {
 
             <Button
               type="submit"
-              className="w-full ripple-effect hover-lift font-sans font-bold py-5 transition-all duration-300"
+              className="w-full h-1   hover-lift font-sans font-bold py-4 transition-all duration-300"
               style={{ backgroundColor: "#0C115B", color: "white" }}
               disabled={isLoading}
             >
