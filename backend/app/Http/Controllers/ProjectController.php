@@ -24,48 +24,39 @@ class ProjectController extends Controller
     }
 
     public function store(Request $request)
-    {
+{
+    $authId = auth()->id();
+    $club = Club::where('created_by', $authId)->first();
 
-        $authId = auth()->id();
-        $clubId = Club::where('created_by', $authId)->first()->id;
-
-        if (!$clubId) {
-            return response()->json(['message' => 'You do not own any club.'], 403);
-        }
-
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'start_date' => 'nullable|date',
-            'end_date' => 'nullable|date|after_or_equal:start_date',
-        ]);
-
-        $projectData = [
-            'name' => $request->name,
-            'description' => $request->description,
-            'start_date'=> $request->start_date,
-            'end_date'=> $request->end_date,
-            'club_id'=> $clubId->id,
-            'created_by'=> $authId,
-        ];
-
-        // Save in Eloquent
-        $project = Project::create($projectData);
-
-        // Save in Neo4j
-        $this->neo4j->run(
-            'MATCH (u:User {id: $userId})
-             CREATE (p:Project $data)<-[:CREATED]-(u)
-             RETURN p',
-            ['userId' => $authId, 'data' => $projectData]
-        );
-
-        return response()->json([
-            'message' => 'Project created successfully!',
-            'project' => $project,
-        ], 201);
-        
+    if (!$club) {
+        return response()->json(['message' => 'You do not own any club.'], 403);
     }
+
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'description' => 'nullable|string',
+        'start_date' => 'nullable|date',
+        'end_date' => 'nullable|date|after_or_equal:start_date',
+    ]);
+
+    $projectData = [
+        'name' => $request->name,
+        'description' => $request->description,
+        'start_date' => $request->start_date,
+        'end_date' => $request->end_date,
+        'club_id' => $club->id,
+        'created_by' => $authId,
+    ];
+
+    // Save in Eloquent
+    $project = Project::create($projectData);
+
+    return response()->json([
+        'message' => 'Project created successfully!',
+        'project' => $project,
+    ], 201);
+}
+
 
     /**
      * Display the specified resource.

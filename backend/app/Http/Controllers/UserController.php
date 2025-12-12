@@ -15,6 +15,13 @@ class UserController extends Controller
         $this->neo4j = app('neo4j');
     }
 
+
+    public function index()
+    {
+        $users = User::all();
+        return response()->json($users);
+    }
+
     /**
      * Authenticated User Profile
      */
