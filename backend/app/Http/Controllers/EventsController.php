@@ -41,16 +41,17 @@ class EventsController extends Controller
             'event_type_id' => 'required|integer|exists:event_types,id',
             'created_by' => 'required|integer|exists:users,id',
             'custom_form' => 'nullable|json',
+            'club_id' => 'required|integer|exists:clubs,id',
             'event_image' => 'nullable|string|max:255'
         ]);
        
             $userId = Auth()->user()->id;
-            $eventClub = Club::findBy('created_by', $userId);
+            $eventClub = Club::where('created_by', $userId)->first();
             if(!$eventClub){
                 return response()->json(['message' => 'You do not have a club'], 403);
             }
         
-        $event = Event::create($request->all());
+        $event = Event::create($validatedData);
         return response()->json(['data' => $event], 201);
     }
     public function update(Request $request, $id)

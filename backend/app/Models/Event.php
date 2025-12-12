@@ -29,4 +29,9 @@ class Event extends Model
     {
         return $this->hasMany(EventPost::class);
     }
+
+    public function eventType()
+{
+    return $this->belongsTo(EventType::class, 'event_type_id');
+}
 }
