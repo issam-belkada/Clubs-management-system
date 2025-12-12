@@ -327,8 +327,8 @@ public function trending(Request $request)
     }
 
     $validatedData = $request->validate([
-        'content' => 'sometimes|string',
         'post_title'=> 'sometimes|string|max:255',
+        'content' => 'sometimes|string',
         'post_description'=> 'sometimes|string|max:255',
         'post_image'=> 'sometimes|string|max:255',
         'post_image2'=> 'sometimes|string|max:255',
@@ -337,7 +337,7 @@ public function trending(Request $request)
         'post_video'=> 'sometimes|string|max:255',
     ]);
 
-    // Update MySQL
+    
     $eventPost->update($validatedData);
 
     // Update in Neo4j
@@ -382,18 +382,30 @@ public function trending(Request $request)
 
 
 
+    
+
     public function like($id)
-    {
-        $userId = auth()->id();
+{
+    $userId = auth()->id();
 
-        $this->neo4j->run(
-            'MATCH (u:User {id: $userId}), (p:EventPost {id: $postId})
-             MERGE (u)-[:LIKES]->(p)',
-            ['userId' => $userId, 'postId' => $id]
-        );
-
-        return response()->json(['message' => 'Post liked']);
+    if (!$userId) {
+        return response()->json(['error' => 'Not authenticated'], 401);
     }
+
+    $this->neo4j->run(
+        'MATCH (u:User {id: $userId})
+         MATCH (p:EventPost {id: $postId})
+         MERGE (u)-[:LIKES]->(p)',
+        [
+            'userId' => (int)$userId,
+            'postId' => (int)$id
+        ]
+    );
+
+    return response()->json(['message' => 'Post liked']);
+}
+
+
 
 
     public function unlike($id)
@@ -403,7 +415,10 @@ public function trending(Request $request)
         $this->neo4j->run(
             'MATCH (u:User {id: $userId})-[r:LIKES]->(p:EventPost {id: $postId})
              DELETE r',
-            ['userId' => $userId, 'postId' => $id]
+            [
+                'userId' => (int)$userId,
+                'postId' => (int) $id
+            ]
         );
 
         return response()->json(['message' => 'Like removed']);
@@ -416,7 +431,7 @@ public function trending(Request $request)
         $this->neo4j->run(
             'MATCH (u:User {id: $userId}), (p:EventPost {id: $postId})
              MERGE (u)-[:SAVED]->(p)',
-            ['userId' => $userId, 'postId' => $id]
+            ['userId' => (int) $userId, 'postId' => (int) $id]
         );
 
         return response()->json(['message' => 'Post saved']);
@@ -429,7 +444,7 @@ public function trending(Request $request)
         $this->neo4j->run(
             'MATCH (u:User {id: $userId})-[r:SAVED]->(p:EventPost {id: $postId})
              DELETE r',
-            ['userId' => $userId, 'postId' => $id]
+            ['userId' => (int) $userId, 'postId' => (int) $id]
         );
 
         return response()->json(['message' => 'Post unsaved']);

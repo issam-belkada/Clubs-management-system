@@ -49,7 +49,7 @@ class UserController extends Controller
                 'MATCH (u:User {id: $id})
                  SET u.name = $name, u.email = $email',
                 [
-                    'id' => (string) $user->id,
+                    'id' => (int) $user->id,
                     'name' => $user->name,
                     'email' => $user->email,
                 ]

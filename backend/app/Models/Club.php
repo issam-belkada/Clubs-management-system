@@ -23,5 +23,8 @@ class Club extends Model
     {
         return $this->hasMany(Event::class);
     }
-    
+    public function ouner()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }    
 }

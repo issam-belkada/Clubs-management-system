@@ -145,7 +145,7 @@ class ClubController extends Controller
     return response()->json(['message' => 'Club deleted'], 200);
 }
 
-    public function getClubEvents($id)
+    public function ClubEvents($id)
     {
         $club = Club::find($id);
         if (!$club) {
@@ -219,18 +219,18 @@ class ClubController extends Controller
     }
     public function updateMemberRole(Request $request, $clubId, $userId)
     {
-        // This function can be implemented to update member roles within the club
         return response()->json(['message' => 'Not implemented'], 501);
     }
 
     public function follow(Request $request, $clubId)
     {
+        $userID= $request->user()->id;
 
         $req  = $this->neo4j->run(
             'MATCH (u:User {id: $userId}), (c:Club {id: $clubId})
              MERGE (u)-[:FOLLOWS]->(c)',
             [
-                'userId' => $request->user()->id,
+                'userId' => (int) $userID,
                 'clubId' => (int)$clubId
             ]
         );
@@ -242,11 +242,12 @@ class ClubController extends Controller
     }
     public function unfollow(Request $request, $clubId)
     {
+        $userID= $request->user()->id;
         $req = $this->neo4j->run(
             'MATCH (u:User {id: $userId})-[f:FOLLOWS]->(c:Club {id: $clubId})
              DELETE f',
             [
-                'userId' => $request->user()->id,
+                'userId' => (int) $userID,
                 'clubId' => (int)$clubId
             ]
         );

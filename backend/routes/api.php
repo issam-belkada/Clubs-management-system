@@ -30,9 +30,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [UserController::class, 'me']);
     Route::put('/me', [UserController::class, 'updateProfile']);
     Route::get('/{user}', [UserController::class, 'show'])->middleware('can:view users');
-    Route::get('/all', [UserController::class, 'index'])->middleware('can:view users');
+    Route::get('/', [UserController::class, 'index'])->middleware('can:view users');
 });
-
 
 
 Route::prefix('clubs')->group(function () {
@@ -60,7 +59,7 @@ Route::prefix('clubs')->group(function () {
         Route::post('/projects', [ProjectController::class, 'store'])->middleware(['auth:sanctum', 'can:create projects']);
 
         // Club Events
-        Route::get('/events', [EventsController::class, 'clubEvents']);
+        Route::get('/events', [ClubController::class, 'clubEvents']);
     });
 });
 
