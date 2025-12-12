@@ -48,4 +48,9 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function club()
+    {
+        return $this->hasOne(Club::class, 'created_by');
+    }
 }

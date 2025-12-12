@@ -38,7 +38,7 @@ class AuthController extends Controller
                 'MERGE (u:User {id: $id})
                  SET u.name = $name, u.email = $email, u.created_at = $created_at',
                 [
-                    'id' => (string) $user->id,
+                    'id' => (int) $user->id,
                     'name' => $user->name,
                     'email' => $user->email,
                     'created_at' => $user->created_at->toDateTimeString(),
@@ -76,11 +76,11 @@ class AuthController extends Controller
         }
 
         $token = $user->createToken('api-token')->plainTextToken;
-
+        
         return response()->json([
             'message' => 'Login successful!',
             'token' => $token,
-            'user' => $user,
+            'user' => $user->load('club'),
             'role' => $user->getRoleNames(),
         ]);
     }
