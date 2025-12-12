@@ -46,6 +46,8 @@ class EventPostController extends Controller
         $validatedData = $request->validate([
             'content' => 'nullable|string',
             'post_image' => 'nullable|string|max:255',
+            'post_title' => 'nullable|string|max:255',
+            'post_description' => 'nullable|string|max:255',
             'post_image2' => 'nullable|string|max:255',
             'post_image3' => 'nullable|string|max:255',
             'post_image4' => 'nullable|string|max:255',
@@ -74,6 +76,8 @@ class EventPostController extends Controller
 
         $request->validate([
             'content' => 'sometimes|string',
+            'post_title'=> 'sometimes|string|max:255',
+            'post_description'=> 'sometimes|string|max:255',
             'post_image'=> 'sometimes|url',
             'post_image2'=> 'sometimes|url',
             'post_image3'=> 'sometimes|url',
@@ -84,6 +88,8 @@ class EventPostController extends Controller
         $eventPost->update($request->only([
             'content',
             'post_image',
+            'post_title',
+            'post_description',
             'post_image2',
             'post_image3',
             'post_image4',

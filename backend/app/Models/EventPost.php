@@ -10,6 +10,8 @@ class EventPost extends Model
     protected $fillable = [
         'event_id',
         'content',
+        "post_title",
+        "post_description",
         'post_image',
         'post_image2',
         'post_image3',
