@@ -78,7 +78,6 @@ class RolesAndPermissionsSeeder extends Seeder
             'view users',
             'accept memebers',
             'remove members',
-            'create clubs',
             'edit clubs',
             'delete clubs',
             'create events',
