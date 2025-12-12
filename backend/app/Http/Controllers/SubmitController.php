@@ -53,15 +53,16 @@ class SubmitController extends Controller
             'club_submissions' => $clubSubmissions
         ], 200);
     }
-    public function submitClub(Request $request, $clubId)
+    public function submitClub(Request $request)
     {
         $userId = Auth::user()->id;
 
         $validatedData = $request->validate([
             'form_data' => 'required|array',
+            'club_id' => 'required|exists:clubs,id',
         ]);
         $submission = SubmitClub::create([
-            'club_id' => $clubId,
+            'club_id' => $validatedData['club_id'],
             'user_id' => $userId,
             'submitted_at' => now(),
             'status' => 'pending',
