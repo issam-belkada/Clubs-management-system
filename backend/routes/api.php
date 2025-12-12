@@ -3,13 +3,7 @@
 use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-<<<<<<< HEAD
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\EventPostController;
-use App\Http\Controllers\ProjectController;
-
-=======
-use App\Http\Controllers\ClubController;
+use App\Http\Controllers\ClubsController;
 use App\Http\Controllers\EventPostController;
 use App\Http\Controllers\EventsControllers;
 use App\Http\Controllers\TaskController;
@@ -21,7 +15,6 @@ use App\Http\Controllers\SubmitController;
 use App\Http\Controllers\SubmitClubController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\DiscoverController;
->>>>>>> e7f14e0bb7a58bb2db9148ed7635537cf339f44d
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
@@ -37,25 +30,25 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
 Route::prefix('clubs')->group(function () {
-    Route::get('/', [ClubController::class, 'index']);
-    Route::post('/', [ClubController::class, 'store'])->middleware('auth:sanctum');
+    Route::get('/', [ClubsController::class, 'index']);
+    Route::post('/', [ClubsController::class, 'store'])->middleware('auth:sanctum');
 
     Route::prefix('{club}')->group(function () {
-        Route::get('/', [ClubController::class, 'show']);
-        Route::put('/', [ClubController::class, 'update'])->middleware('auth:sanctum');
-        Route::delete('/', [ClubController::class, 'destroy'])->middleware('auth:sanctum');
+        Route::get('/', [ClubsController::class, 'show']);
+        Route::put('/', [ClubsController::class, 'update'])->middleware('auth:sanctum');
+        Route::delete('/', [ClubsController::class, 'destroy'])->middleware('auth:sanctum');
 
         // Club Members
-        Route::get('/members', [ClubController::class, 'members']);
-        Route::post('/members', [ClubController::class, 'addMember'])->middleware('auth:sanctum');
-        Route::put('/members/{user}', [ClubController::class, 'updateMemberRole'])->middleware('auth:sanctum');
-        Route::delete('/members/{user}', [ClubController::class, 'removeMember'])->middleware('auth:sanctum');
-        Route::post('/follow', [ClubController::class, 'follow'])->middleware('auth:sanctum');
-        Route::delete('/unfollow', [ClubController::class, 'unfollow'])->middleware('auth:sanctum');
+        Route::get('/members', [ClubsController::class, 'members']);
+        Route::post('/members', [ClubsController::class, 'addMember'])->middleware('auth:sanctum');
+        Route::put('/members/{user}', [ClubsController::class, 'updateMemberRole'])->middleware('auth:sanctum');
+        Route::delete('/members/{user}', [ClubsController::class, 'removeMember'])->middleware('auth:sanctum');
+        Route::post('/follow', [ClubsController::class, 'follow'])->middleware('auth:sanctum');
+        Route::delete('/unfollow', [ClubsController::class, 'unfollow'])->middleware('auth:sanctum');
         // Club Resources
         Route::get('/resources', [ResourceController::class, 'index']);
         Route::post('/resources', [ResourceController::class, 'store'])->middleware('auth:sanctum');
-        Route::get('/search', [ClubController::class, 'search']);
+        Route::get('/search', [ClubsController::class, 'search']);
         // Club Projects
         Route::get('/projects', [ProjectController::class, 'index']);
         Route::post('/projects', [ProjectController::class, 'store'])->middleware('auth:sanctum');
@@ -104,7 +97,7 @@ Route::prefix('event-posts')->group(function () {
         Route::delete('/like', [EventPostController::class, 'unlike'])->middleware('auth:sanctum');
         Route::post('/save', [EventPostController::class, 'save'])->middleware('auth:sanctum');
         Route::delete('/save', [EventPostController::class, 'unsave'])->middleware('auth:sanctum');
-      
+
     });
     Route::get( '/likes', [EventPostController::class, 'likes'])
 });

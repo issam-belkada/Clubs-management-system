@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Event;
 use App\Models\Attendance;
-class EventsControllers extends Controller
+class EventsController extends Controller
 {
     protected $neo4j;
     public function __construct()
