@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Event;
 use App\Models\Attendance;
-class EventsControllers extends Controller
+use App\Models\Submit;
+class EventsController extends Controller
 {
     protected $neo4j;
     public function __construct()
@@ -29,8 +30,10 @@ class EventsControllers extends Controller
         $validatedData = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'date' => 'required|date',
-            'time' => 'required',
+            'start_time' => 'required|date',
+            'end_time' => 'required',
+            'max_participants' => 'nullable|integer',
+            'status' => 'in:scheduled,ongoing,completed,cancelled|default:scheduled',
             'location' => 'nullable|string|max:255',
             'event_type_id' => 'required|integer|exists:event_types,id',
             'club_id' => 'required|integer|exists:clubs,id',
@@ -46,8 +49,10 @@ class EventsControllers extends Controller
         $validatedData = $request->validate([
             'title' => 'required|string|max:255|nullable',
             'description' => 'nullable|string',
-            'date' => 'required|date',
-            'time' => 'required',
+            'start_time' => 'required|date',
+            'max_participants' => 'nullable|integer',
+            'status' => 'nullable|in:scheduled,ongoing,completed,cancelled',
+            'end_time' => 'required',
             'location' => 'nullable|string|max:255',
             'event_type_id' => 'required|integer|exists:event_types,id',
             'club_id' => 'required|integer|exists:clubs,id',

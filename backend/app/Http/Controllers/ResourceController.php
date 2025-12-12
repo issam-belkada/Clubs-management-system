@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Ressource;
-class RessourceController extends Controller
+class ResourceController extends Controller
 {
     public function index()
     {

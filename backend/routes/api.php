@@ -5,7 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ClubController;
 use App\Http\Controllers\EventPostController;
-use App\Http\Controllers\EventsControllers;
+use App\Http\Controllers\EventsController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ResourceController;
@@ -15,6 +15,10 @@ use App\Http\Controllers\SubmitController;
 use App\Http\Controllers\SubmitClubController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\DiscoverController;
+
+
+
+
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
@@ -97,8 +101,9 @@ Route::prefix('event-posts')->group(function () {
         Route::delete('/like', [EventPostController::class, 'unlike'])->middleware('auth:sanctum');
         Route::post('/save', [EventPostController::class, 'save'])->middleware('auth:sanctum');
         Route::delete('/save', [EventPostController::class, 'unsave'])->middleware('auth:sanctum');
-        Route::get('/likes', [EventPostController::class, 'likes']);
+
     });
+    Route::get('/likes', [EventPostController::class, 'likes']);
 });
 
 
@@ -156,9 +161,9 @@ Route::prefix('submissions')->middleware('auth:sanctum')->group(function () {
     Route::post('/events', [SubmitController::class, 'submitEvent']);
     Route::delete('/events/{event}', [SubmitController::class, 'cancleEventSubmission']);
 
-    Route::get('/clubs', [SubmitClubController::class, 'pendingClubs']);
-    Route::post('/clubs', [SubmitClubController::class, 'submitClub']);
-    Route::put('/clubs/{submisionId}', [SubmitClubController::class, 'reviewClub'])->middleware('can:review clubs');
+    Route::get('/clubs', [SubmitController::class, 'pendingClubs']);
+    Route::post('/clubs', [SubmitController::class, 'submitClub']);
+    Route::put('/clubs/{submisionId}', [SubmitController::class, 'reviewClub'])->middleware('can:review clubs');
 });
 
 Route::prefix('attendance')->middleware('auth:sanctum')->group(function () {

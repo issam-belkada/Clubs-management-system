@@ -9,14 +9,16 @@ class Event extends Model
     protected $fillable = [
         'title',
         'description',
-        'date',
-        'time',
+        'start_time',
+        'end_time',
         'location',
         'event_type_id',
+        'max_participants',
         'club_id',
         'created_by',
-        'custom_form',
-        'event_image'
+        'status',
+        'event_image',
+        'custom_form'
     ];
 
     public function club(): \Illuminate\Database\Eloquent\Relations\BelongsTo
