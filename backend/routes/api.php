@@ -30,6 +30,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [UserController::class, 'me']);
     Route::put('/me', [UserController::class, 'updateProfile']);
     Route::get('/{user}', [UserController::class, 'show'])->middleware('can:view users');
+    Route::get('/all', [UserController::class, 'index'])->middleware('can:view users');
 });
 
 
